@@ -1,0 +1,28 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2015-04-29T16:53:01
+#
+#-------------------------------------------------
+
+QT       += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+TARGET = project2
+TEMPLATE = app
+
+
+SOURCES += main.cpp \
+    Mainwindow.cpp \
+    Game.cpp \
+    Square.cpp
+
+HEADERS  += \
+    Mainwindow.h \
+    Game.h \
+    Square.h
+
+FORMS    +=
+
+RESOURCES += \
+    res.qrc
