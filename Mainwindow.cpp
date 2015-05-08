@@ -1,4 +1,5 @@
 #include "Mainwindow.h"
+#include <QInputDialog>
 
 
 Mainwindow::Mainwindow()
@@ -10,5 +11,21 @@ Mainwindow::Mainwindow()
     /* add game window */
     game = new Game();
     setCentralWidget(game);
-    game->start();
 }
+
+void Mainwindow::startGame()
+{
+    game->init();   // start game
+}
+
+void Mainwindow::askUserName()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, "Your name?", "User name:", QLineEdit::Normal, "Anonymous", &ok);
+    if(!ok)
+        game->setUserName("Anonymous");
+    else
+        game->setUserName(text);
+}
+
+

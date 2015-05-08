@@ -1,52 +1,104 @@
 #include "Game.h"
 #include <QDebug>
+#include <cstdlib>
+#define dbName "rank.db"
+#define tbName "rank"
 
 Game::Game()
 {
-    scene = new QGraphicsScene(this);
-    setScene(scene);
-    scene->setBackgroundBrush(QPixmap(":/images/images/cloud.jpeg"));
+    gameScene = new QGraphicsScene(this);
+    setScene(gameScene);
+    gameScene->setBackgroundBrush(QPixmap(":/images/images/cloud.jpeg"));
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(500,650);
-    scene->setSceneRect(0,0,500,650);
-
+    gameScene->setSceneRect(0,0,500,650);
     /* add line */
-    scene->addLine(0, 525, 600, 525);   // horizon
-    scene->addLine(0, 400, 600, 400);
-    scene->addLine(0, 275, 600, 275);
-    scene->addLine(0, 150, 600, 150);
-    scene->addLine(125, 150, 125, 650); //vertical
-    scene->addLine(250, 150, 250, 650);
-    scene->addLine(375, 150, 375, 650);
+    gameScene->addLine(0, 525, 600, 525);   // horizon
+    gameScene->addLine(0, 400, 600, 400);
+    gameScene->addLine(0, 275, 600, 275);
+    gameScene->addLine(0, 150, 600, 150);
+    gameScene->addLine(125, 150, 125, 650); //vertical
+    gameScene->addLine(250, 150, 250, 650);
+    gameScene->addLine(375, 150, 375, 650);
 
     /* add title */
     title = new QGraphicsSimpleTextItem("2048");
     title->setPos(30, 20);
-    title->setBrush(QBrush(QColor(0, 0, 255)));
+    title->setBrush(QBrush(QColor(255, 10, 10)));
     QFont titleFont("Times", 50, QFont::Bold);
     titleFont.setLetterSpacing(QFont::AbsoluteSpacing, 15);
     title->setFont(titleFont);
-    scene->addItem(title);
+    gameScene->addItem(title);
 
-    /* add number */
-    for(int i=0; i<4; i++)  // temp to show all squares in the window
+    /* Score */
+    scoreLabel = new QGraphicsSimpleTextItem("Score:");
+    scoreLabel->setPos(275, 35);
+    scoreLabel->setBrush(QBrush(QColor(220, 70, 70)));
+    QFont scoreLabelFont("Times", 25);
+    scoreLabelFont.setItalic(true);
+    scoreLabelFont.setUnderline(true);
+    scoreLabel->setFont(scoreLabelFont);
+    gameScene->addItem(scoreLabel);
+    score = new QGraphicsSimpleTextItem("0");
+    score->setPos(350, 80);
+    score->setBrush(QBrush(QColor(220, 70, 70)));
+    QFont scoreFont("Times", 25);
+    scoreFont.setItalic(true);
+    score->setFont(scoreFont);
+    gameScene->addItem(score);
+
+    /* add squares */
+    for(int i=0; i<4; i++)
         for(int j=0; j<4; j++)
         {
             squares[i][j] = new Square();
-            squares[i][j]->setValue(0);
             squares[i][j]->setcor(i, j);
             squares[i][j]->setPos(15+125*j, 180+125*i);         // relocate the pos for image
             squares[i][j]->setFont(QFont("Times", 35, QFont::Bold)); // no need in image
-            scene->addItem(squares[i][j]);
+            gameScene->addItem(squares[i][j]);
         }
 
-    /* add num */
-    addnum = 2;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(dbName);
+    if(!db.open())
+    {
+        qDebug() << "DataBase " << dbName <<" can't be opened";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        QSqlQuery qry;
+        qry.exec(QString("CREATE TABLE %1 (id INT PRIMARY KEY, name TEXT, score INT)").arg(tbName));
+    }
+
 }
 
-void Game::start()
+void Game::init()
 {
+    QSqlQuery qry;
+    qry.exec(QString("SELECT COUNT(*) FROM %1").arg(tbName));
+    qry.next();
+//    qDebug() << "row now is " << qry.value(0).toString();
+    recordNum = qry.value(0).toInt();
+
+    /* init squares */
+    for(int i=0; i<4; i++)  // temp to show all squares in the window
+        for(int j=0; j<4; j++)
+        {
+            squares[i][j]->setValue(0);
+            squares[i][j]->setExist(false);
+        }
+
+    /* init score */
+    score->setText("0");
+
+    /* init num */
+    addnum = 2;
+
+    /* init gameOver flag */
+    theEnd = false;
+
     addsquares();
 }
 
@@ -75,11 +127,13 @@ void Game::addsquares()
 //        qDebug() << "add new squares" << endl;
     }
     while(cnt!=addnum);
-
 }
 
 void Game::keyPressEvent(QKeyEvent *event)
 {
+    if(theEnd)
+        return;
+
     if(event->key() == Qt::Key_Up)  // combine squares
         combine(1);
     else if(event->key() == Qt::Key_Down)
@@ -94,6 +148,13 @@ void Game::keyPressEvent(QKeyEvent *event)
         gameover();
     if(hasMoved)
         addsquares();
+    if(event->key() == Qt::Key_R)
+        init();
+}
+
+void Game::setUserName(QString name)
+{
+    userName = name;
 }
 
 int Game::checkend()    // 2=>normal 1=>left-one 0=>end
@@ -111,7 +172,12 @@ int Game::checkend()    // 2=>normal 1=>left-one 0=>end
 
 void Game::gameover()   // show rank dialog in the future
 {
+    theEnd = true;
     qDebug() << "gameover" << endl;
+    recordNum++;
+    QSqlQuery qry;
+    if(!qry.exec(QString("INSERT INTO %1 VALUES (%2, '%3', %4)").arg(tbName, QString::number(recordNum), userName, score->text())));
+        qDebug() << qry.lastError().text();
 }
 
 void Game::updateExist()
@@ -124,11 +190,11 @@ void Game::updateExist()
             else
                 squares[i][j]->setExist(false);
         }
-
 }
 
 void Game::combine(int dir) // 1->up 2->down 3->left 4->right
 {
+    addValue = 0;   // addValue init to 0
     hasMoved = false;
     if(dir==1)  // up
     {
@@ -156,6 +222,7 @@ void Game::combine(int dir) // 1->up 2->down 3->left 4->right
 //                            qDebug() << "pop " << s.top() << endl;
                             s.pop();
                             s.push(a*2);
+                            addValue += a*2;
 //                            qDebug() << "push " << s.top() << endl;
                             mergedlast = true;
                             hasMoved = true;
@@ -209,6 +276,7 @@ void Game::combine(int dir) // 1->up 2->down 3->left 4->right
 //                            qDebug() << "pop " << s.top() << endl;
                             s.pop();
                             s.push(a*2);
+                            addValue += a*2;
 //                            qDebug() << "push " << s.top() << endl;
                             mergedlast = true;
                             hasMoved = true;
@@ -262,6 +330,7 @@ void Game::combine(int dir) // 1->up 2->down 3->left 4->right
 //                            qDebug() << "pop " << s.top() << endl;
                             s.pop();
                             s.push(a*2);
+                            addValue += a*2;
 //                            qDebug() << "push " << s.top() << endl;
                             mergedlast = true;
                             hasMoved = true;
@@ -315,6 +384,7 @@ void Game::combine(int dir) // 1->up 2->down 3->left 4->right
 //                            qDebug() << "pop " << s.top() << endl;
                             s.pop();
                             s.push(a*2);
+                            addValue += a*2;
 //                            qDebug() << "push " << s.top() << endl;
                             mergedlast = true;
                             hasMoved = true;
@@ -343,4 +413,12 @@ void Game::combine(int dir) // 1->up 2->down 3->left 4->right
         }
     }
     updateExist();
+    addScore(); // update score
 }
+
+void Game::addScore()
+{
+    int newScore = score->text().toInt()+addValue;
+    score->setText(QString::number(newScore));
+}
+
