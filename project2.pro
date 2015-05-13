@@ -15,12 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp \
     Mainwindow.cpp \
     Game.cpp \
-    Square.cpp
+    Square.cpp \
+    GameScene.cpp
 
 HEADERS  += \
     Mainwindow.h \
     Game.h \
-    Square.h
+    Square.h \
+    GameScene.h
 
 FORMS    +=
 

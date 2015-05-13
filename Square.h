@@ -4,12 +4,12 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSimpleTextItem>
 
-class Square: public QObject, public QGraphicsSimpleTextItem    // change pixitem
+class Square: public QObject, public QGraphicsPixmapItem    // change pixitem
 {
     Q_OBJECT
 public:
     Square();
-    Square(const QString & text, QGraphicsItem * parent = 0);
+    Square(const QPixmap & pixmap, QGraphicsItem * parent = 0);
 
     void setValue(int value);
     int getValue();

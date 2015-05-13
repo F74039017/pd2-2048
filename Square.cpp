@@ -5,8 +5,8 @@ Square::Square()
     init();
 }
 
-Square::Square(const QString & text, QGraphicsItem * parent)    // reimplement when change to pixitem
-        :QGraphicsSimpleTextItem(text, parent)
+Square::Square(const QPixmap & pixmap, QGraphicsItem * parent)    // reimplement when change to pixitem
+        :QGraphicsPixmapItem(pixmap, parent)
 {
     init();
 }
@@ -14,7 +14,7 @@ Square::Square(const QString & text, QGraphicsItem * parent)    // reimplement w
 void Square::setValue(int x)
 {
     value = x;
-    setText(QString::number(value));    // temp for simpletext class
+//    setText(QString::number(value));    // temp for simpletext class
 }
 
 int Square::getValue()
