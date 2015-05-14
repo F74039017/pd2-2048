@@ -16,13 +16,17 @@ SOURCES += main.cpp \
     Mainwindow.cpp \
     Game.cpp \
     Square.cpp \
-    GameScene.cpp
+    GameScene.cpp \
+    IndexScene.cpp \
+    Icon.cpp
 
 HEADERS  += \
     Mainwindow.h \
     Game.h \
     Square.h \
-    GameScene.h
+    GameScene.h \
+    IndexScene.h \
+    Icon.h
 
 FORMS    +=
 

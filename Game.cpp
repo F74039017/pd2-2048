@@ -4,11 +4,17 @@
 
 Game::Game()
 {
+    /* construct gameScene */
     gameScene = new GameScene(this);
-    setScene(gameScene);
+//    setScene(gameScene);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(500,650);
+
+    /* construct indexScene */
+    indexScene = new IndexScene(this);
+    setScene(indexScene);
+    QObject::connect(indexScene, SIGNAL(pressStart()), this, SLOT(toGameScene()));
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
@@ -40,4 +46,12 @@ QString Game::getuserName()
     return userName;
 }
 
+void Game::restart()
+{
+    init();
+}
 
+void Game::toGameScene()
+{
+    setScene(gameScene);
+}

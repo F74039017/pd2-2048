@@ -15,8 +15,8 @@ public:
 
 private:
     QMenu *menu;
-    QAction *restart;
-    QAction *showrank;
+    QAction *restartAct;
+    QAction *showrankAct;
     Game *game;
 };
 

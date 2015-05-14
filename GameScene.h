@@ -25,18 +25,19 @@ public:
     void init();
 
 private:
-    int recordNum;
-    QGraphicsSimpleTextItem *title;
-    Square *squares[4][4];
-    bool pressed;
-    bool hasMoved;
-    int addnum;
+    QGraphicsPixmapItem *gameBG;
+    QGraphicsPixmapItem *title;
     QGraphicsSimpleTextItem *scoreLabel;
     QGraphicsSimpleTextItem *score;
-    int addValue;   // record the value add last time
-    bool theEnd;
     QGraphicsRectItem *gameoverBG;
     QGraphicsSimpleTextItem *gameoverLabel;
+    Square *squares[4][4];
+    int recordNum;
+    bool pressed;
+    bool hasMoved;
+    bool theEnd;
+    int addnum;
+    int addValue;   // record the value add last time
 
     int checkend();
     void gameover();

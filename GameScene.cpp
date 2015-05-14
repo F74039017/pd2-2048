@@ -8,38 +8,43 @@
 GameScene::GameScene(QObject *parent)
     :QGraphicsScene(parent)
 {
-    setBackgroundBrush(QPixmap(":/images/images/cloud.jpeg"));
+    /* set game background */
+    gameBG = new QGraphicsPixmapItem(QPixmap(":/images/images/game_bg_light.png"));
+    gameBG->setScale(0.731);
+    gameBG->setZValue(-1);
+    addItem(gameBG);
     setSceneRect(0,0,500,650);
+
     /* add line */
-    addLine(0, 525, 600, 525);   // horizon
-    addLine(0, 400, 600, 400);
-    addLine(0, 275, 600, 275);
-    addLine(0, 150, 600, 150);
-    addLine(125, 150, 125, 650); //vertical
-    addLine(250, 150, 250, 650);
-    addLine(375, 150, 375, 650);
+    QPen pen = QPen(QColor(Qt::white));
+    addLine(0, 525, 600, 525, pen);   // horizon
+    addLine(0, 400, 600, 400, pen);
+    addLine(0, 275, 600, 275, pen);
+    addLine(0, 150, 600, 150, pen);
+    addLine(125, 150, 125, 650, pen); //vertical
+    addLine(250, 150, 250, 650, pen);
+    addLine(375, 150, 375, 650, pen);
 
     /* add title */
-    title = new QGraphicsSimpleTextItem("2048");
-    title->setPos(30, 20);
-    title->setBrush(QBrush(QColor(255, 10, 10)));
-    QFont titleFont("Times", 50, QFont::Bold);
-    titleFont.setLetterSpacing(QFont::AbsoluteSpacing, 15);
-    title->setFont(titleFont);
+    title = new QGraphicsPixmapItem(QPixmap(":/images/images/2048_title_in.png"));
+    title->setPos(-40, -10);
+    title->setScale(0.35);
     addItem(title);
 
     /* Score */
     scoreLabel = new QGraphicsSimpleTextItem("Score:");
-    scoreLabel->setPos(275, 35);
-    scoreLabel->setBrush(QBrush(QColor(220, 70, 70)));
+    scoreLabel->setPos(285, 35);
+//    scoreLabel->setBrush(QBrush(QColor(220, 70, 70)));
+    scoreLabel->setBrush(QBrush(QColor(Qt::white)));
     QFont scoreLabelFont("URW Chancery L", 25);
     scoreLabelFont.setItalic(true);
     scoreLabelFont.setUnderline(true);
     scoreLabel->setFont(scoreLabelFont);
     addItem(scoreLabel);
     score = new QGraphicsSimpleTextItem("0");
-    score->setPos(350, 80);
-    score->setBrush(QBrush(QColor(220, 70, 70)));
+    score->setPos(360, 80);
+//    score->setBrush(QBrush(QColor(220, 70, 70)));
+    score->setBrush(QBrush(QColor(Qt::white)));
     QFont scoreFont("URW Chancery L", 25);
     scoreFont.setItalic(true);
     score->setFont(scoreFont);
@@ -49,12 +54,12 @@ GameScene::GameScene(QObject *parent)
     for(int i=0; i<4; i++)
         for(int j=0; j<4; j++)
         {
-            squares[i][j] = new Square(QPixmap(":/images/images/square2.png"));
+            squares[i][j] = new Square();
             squares[i][j]->setScale(0.25);
             squares[i][j]->setcor(i, j);
-            squares[i][j]->setPos(125*j,150+125*i);         // relocate the pos for image
-            //squares[i][j]->setFont(QFont("Times", 35, QFont::Bold)); // no need in image
+            squares[i][j]->setPos(125*j,150+125*i);
             addItem(squares[i][j]);
+            squares[i][j]->hide();
         }
 
     /* GameOver */
@@ -66,7 +71,6 @@ GameScene::GameScene(QObject *parent)
     gameoverBG->hide();
     gameoverLabel = new QGraphicsSimpleTextItem("Game Over");
     gameoverLabel->setPos(55, 80);
-//    gameoverLabel->setBrush(QBrush(QColor(220, 70, 70)));
     QFont gameoverLabelFont("URW Chancery L", 55);
     gameoverLabelFont.setItalic(true);
     gameoverLabelFont.setBold(true);
@@ -96,7 +100,7 @@ void GameScene::init()
     score->setText("0");
 
     /* init num */
-    addnum = 2;
+    addnum = 2; // start with 2 squares
 
     /* init gameOver flag */
     theEnd = false;
@@ -144,8 +148,10 @@ void GameScene::keyPressEvent(QKeyEvent *event)
         combine(3);
     else if(event->key() == Qt::Key_Right)
         combine(4);
+    else
+        qDebug() << "effect";
     addnum = checkend();
-    qDebug() << "addnum: " << addnum << endl;
+//    qDebug() << "addnum: " << addnum << endl;
     if(!hasMoved && !addnum)
         gameover();
     if(hasMoved)
@@ -162,7 +168,7 @@ int GameScene::checkend()    // 2=>normal 1=>left-one 0=>end
             if(squares[i][j]->isExist())
                 cnt++;
     if(16-cnt>1)
-        return 2;
+        return rand()%2+1;
     else
         return 16-cnt;
 }

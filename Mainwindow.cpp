@@ -4,13 +4,19 @@
 
 Mainwindow::Mainwindow()
 {
-    /* add menu */
-    menu = new QMenu();
-    menu = menuBar()->addMenu("&Option");
+    setWindowTitle("2048");
 
     /* add game window */
     game = new Game();
     setCentralWidget(game);
+
+    /* create action */
+    restartAct = new QAction("&Restart", this);
+    QObject::connect(restartAct, SIGNAL(triggered()), game, SLOT(restart()));
+
+    /* create menu */
+    menu = menuBar()->addMenu("&Option");
+    menu->addAction(restartAct);
 }
 
 void Mainwindow::startGame()
@@ -27,5 +33,4 @@ void Mainwindow::askUserName()
     else
         game->setUserName(text);
 }
-
 
