@@ -2,7 +2,9 @@
 #define INDEXSCENE_H
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSimpleTextItem>
 #include "Icon.h"
+#include <QtSql>
 
 class IndexScene: public QGraphicsScene
 {
@@ -17,11 +19,21 @@ signals:
 
 private:
     QGraphicsPixmapItem *indexBG;
+    QGraphicsPixmapItem *rankBG;
     Icon *startIcon;
     Icon *rankIcon;
-
+    Icon *backIcon;
     QRect *startIconRect;
     QRect *rankIconRect;
+    QRect *backIconRect;
+    bool rankon;
+    QGraphicsSimpleTextItem *rankName[10];
+    QGraphicsSimpleTextItem *rankScore[10];
+    QGraphicsSimpleTextItem *rankID[10];
+
+    void showRank();
+    void hideRank();
+    void updateRank();
 };
 
 #endif // INDEXSCENE_H

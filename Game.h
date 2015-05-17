@@ -9,7 +9,7 @@ class Game: public QGraphicsView{
     Q_OBJECT
 
 public:
-    Game();
+    Game(QWidget * parent = 0);
     void init();
     void setUserName(QString name);
     QString getuserName();

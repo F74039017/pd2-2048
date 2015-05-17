@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-        <file>images/cloud.jpeg</file>
         <file>images/2048_title_in.png</file>
         <file>images/again_icon.png</file>
         <file>images/again_icon_pressed.png</file>

@@ -2,14 +2,16 @@
 #define dbName "rank.db"
 #define tbName "rank"
 
-Game::Game()
+Game::Game(QWidget * parent)
+    :QGraphicsView(parent)
 {
     /* construct gameScene */
     gameScene = new GameScene(this);
 //    setScene(gameScene);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setFixedSize(500,650);
+//    setFixedSize(500,650);
+    setMinimumSize(500, 650);
 
     /* construct indexScene */
     indexScene = new IndexScene(this);

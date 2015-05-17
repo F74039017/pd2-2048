@@ -149,7 +149,7 @@ void GameScene::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Right)
         combine(4);
     else
-        qDebug() << "effect";
+        return;
     addnum = checkend();
 //    qDebug() << "addnum: " << addnum << endl;
     if(!hasMoved && !addnum)
@@ -168,7 +168,7 @@ int GameScene::checkend()    // 2=>normal 1=>left-one 0=>end
             if(squares[i][j]->isExist())
                 cnt++;
     if(16-cnt>1)
-        return rand()%2+1;
+        return 1;
     else
         return 16-cnt;
 }
@@ -206,218 +206,84 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
     {
         for(int i=0; i<4; i++)
         {
-            stack<int> s;
-
-            /* merge list */
-            int mergedlast = false;
+            int last=0;
+            int id=-1;
             for(int j=0; j<4; j++)
             {
-                if(squares[j][i]->isExist())
-                {
-                    if(j!=s.size())   // size-1 is the final pos for up and left, not push size()
-                        hasMoved = true;
-                    if(!mergedlast && s.size()>=1) // merge check
-                    {
-//                        qDebug() << "in merge check" << endl;
-                        int a = s.top();
-//                        qDebug() << "last number" << a << endl;
-                        int b = squares[j][i]->getValue();
-//                        qDebug() << "now" << b << endl;
-                        if(a == b)
-                        {
-//                            qDebug() << "pop " << s.top() << endl;
-                            s.pop();
-                            s.push(a*2);
-                            addValue += a*2;
-//                            qDebug() << "push " << s.top() << endl;
-                            mergedlast = true;
-                            hasMoved = true;
-                        }
-                        else
-                        {
-                            s.push(b);
-                            mergedlast = false;
-                        }
-                    }
-                    else    // push square
-                    {
-                        s.push(squares[j][i]->getValue());
-                        mergedlast = false;
-                    }
-                    squares[j][i]->setValue(0); // reset value
-                }
+                if(!squares[j][i]->isExist())
+                    continue;
+                int cur = squares[j][i]->getValue();
+                if(cur==last)
+                    squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
+                else
+                    squares[++id][i]->setValue(cur), last=cur;
+                if(!(id==j))
+                    squares[j][i]->setValue(0), hasMoved = true;
             }
-            while(!s.empty())   // update merge list
-            {
-//                qDebug() << s.top() << " ";
-                squares[s.size()-1][i]->setValue(s.top());
-                s.pop();
-            }
-//            qDebug() << "----" << endl;
         }
     }
     else if(dir==2)  // down
     {
         for(int i=3; i>=0; i--)
         {
-            stack<int> s;
-
-            /* merge list */
-            int mergedlast = false;
+            int last=0;
+            int id=4;
             for(int j=3; j>=0; j--)
             {
-                if(squares[j][i]->isExist())
-                {
-                    if(j!=4-s.size()-1)
-                        hasMoved = true;
-                    if(!mergedlast && s.size()>=1) // merge check
-                    {
-//                        qDebug() << "in merge check" << endl;
-                        int a = s.top();
-//                        qDebug() << "last number" << a << endl;
-                        int b = squares[j][i]->getValue();
-//                        qDebug() << "now" << b << endl;
-                        if(a == b)
-                        {
-//                            qDebug() << "pop " << s.top() << endl;
-                            s.pop();
-                            s.push(a*2);
-                            addValue += a*2;
-//                            qDebug() << "push " << s.top() << endl;
-                            mergedlast = true;
-                            hasMoved = true;
-                        }
-                        else
-                        {
-                            s.push(b);
-                            mergedlast = false;
-                        }
-                    }
-                    else    // push square
-                    {
-                        s.push(squares[j][i]->getValue());
-                        mergedlast = false;
-                    }
-                    squares[j][i]->setValue(0); // reset value
-                }
+                if(!squares[j][i]->isExist())
+                    continue;
+                int cur = squares[j][i]->getValue();
+                if(cur==last)
+                    squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
+                else
+                    squares[--id][i]->setValue(cur), last=cur;
+                if(!(id==j))
+                    squares[j][i]->setValue(0), hasMoved = true;
             }
-            while(!s.empty())   // update merge list
-            {
-//                qDebug() << s.top() << " ";
-                squares[4-s.size()][i]->setValue(s.top());
-                s.pop();
-            }
-//            qDebug() << "----" << endl;
         }
     }
     else if(dir==3)  // left
     {
         for(int i=0; i<4; i++)
         {
-            stack<int> s;
-
-            /* merge list */
-            int mergedlast = false;
+            int last=0;
+            int id=-1;
             for(int j=0; j<4; j++)
             {
-                if(squares[i][j]->isExist())
-                {
-                    if(j!=s.size())   // size-1 is the final pos for up and left, not push size()
-                        hasMoved = true;
-                    if(!mergedlast && s.size()>=1) // merge check
-                    {
-//                        qDebug() << "in merge check" << endl;
-                        int a = s.top();
-//                        qDebug() << "last number" << a << endl;
-                        int b = squares[i][j]->getValue();
-//                        qDebug() << "now" << b << endl;
-                        if(a == b)
-                        {
-//                            qDebug() << "pop " << s.top() << endl;
-                            s.pop();
-                            s.push(a*2);
-                            addValue += a*2;
-//                            qDebug() << "push " << s.top() << endl;
-                            mergedlast = true;
-                            hasMoved = true;
-                        }
-                        else
-                        {
-                            s.push(b);
-                            mergedlast = false;
-                        }
-                    }
-                    else    // push square
-                    {
-                        s.push(squares[i][j]->getValue());
-                        mergedlast = false;
-                    }
-                    squares[i][j]->setValue(0); // reset value
-                }
+                if(!squares[i][j]->isExist())
+                    continue;
+                int cur = squares[i][j]->getValue();
+                if(cur==last)
+                    squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
+                else
+                    squares[i][++id]->setValue(cur), last=cur;
+                if(!(id==j))
+                    squares[i][j]->setValue(0), hasMoved = true;
             }
-            while(!s.empty())   // update merge list
-            {
-//                qDebug() << s.top() << " ";
-                squares[i][s.size()-1]->setValue(s.top());
-                s.pop();
-            }
-//            qDebug() << "----" << endl;
         }
     }
     else if(dir==4)  // right
     {
         for(int i=3; i>=0; i--)
         {
-            stack<int> s;
-
-            /* merge list */
-            int mergedlast = false;
+            int last=0;
+            int id=4;
             for(int j=3; j>=0; j--)
             {
-                if(squares[i][j]->isExist())
-                {
-                    if(j!=4-s.size()-1)
-                        hasMoved = true;
-                    if(!mergedlast && s.size()>=1) // merge check
-                    {
-//                        qDebug() << "in merge check" << endl;
-                        int a = s.top();
-//                        qDebug() << "last number" << a << endl;
-                        int b = squares[i][j]->getValue();
-//                        qDebug() << "now" << b << endl;
-                        if(a == b)
-                        {
-//                            qDebug() << "pop " << s.top() << endl;
-                            s.pop();
-                            s.push(a*2);
-                            addValue += a*2;
-//                            qDebug() << "push " << s.top() << endl;
-                            mergedlast = true;
-                            hasMoved = true;
-                        }
-                        else
-                        {
-                            s.push(b);
-                            mergedlast = false;
-                        }
-                    }
-                    else    // push square
-                    {
-                        s.push(squares[i][j]->getValue());
-                        mergedlast = false;
-                    }
-                    squares[i][j]->setValue(0); // reset value
-                }
+                if(!squares[i][j]->isExist())
+                    continue;
+                int cur = squares[i][j]->getValue();
+                if(cur==last)
+                    squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
+                else
+                    squares[i][--id]->setValue(cur), last=cur;
+                if(!(id==j))
+                    squares[i][j]->setValue(0), hasMoved = true;
             }
-            while(!s.empty())   // update merge list
-            {
-//                qDebug() << s.top() << " ";
-                squares[i][4-s.size()]->setValue(s.top());
-                s.pop();
-            }
-//            qDebug() << "----" << endl;
         }
     }
+    if(hasMoved)
+        addValue += 2;
     updateExist();
     addScore(); // update score
 }

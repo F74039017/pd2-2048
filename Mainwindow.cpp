@@ -7,7 +7,7 @@ Mainwindow::Mainwindow()
     setWindowTitle("2048");
 
     /* add game window */
-    game = new Game();
+    game = new Game(this);
     setCentralWidget(game);
 
     /* create action */
@@ -17,6 +17,8 @@ Mainwindow::Mainwindow()
     /* create menu */
     menu = menuBar()->addMenu("&Option");
     menu->addAction(restartAct);
+
+    setFixedSize(sizeHint());   // disable to resize from drag border
 }
 
 void Mainwindow::startGame()

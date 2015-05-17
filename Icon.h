@@ -9,9 +9,10 @@ public:
     Icon(Icon::Type type, QGraphicsItem * parent=0);
     void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+    void setImage(Icon::Type type);
+    Icon::Type getType();
 
 private:
-    void setImage(Type type);
     Type type;
 };
 

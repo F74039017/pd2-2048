@@ -8,6 +8,7 @@
 class Mainwindow: public QMainWindow
 {
     Q_OBJECT
+
 public:
     Mainwindow();
     void startGame();

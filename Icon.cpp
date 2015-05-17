@@ -53,4 +53,9 @@ void Icon::setImage(Icon::Type type)
     }
 }
 
+Icon::Type Icon::getType()
+{
+    return type;
+}
+
 
