@@ -13,6 +13,7 @@ class IndexScene: public QGraphicsScene
 public:
     IndexScene(QObject *parent=0);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void resetIcon();
 
 signals:
     void pressStart();

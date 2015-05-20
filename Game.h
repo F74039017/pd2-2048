@@ -17,6 +17,7 @@ public:
 public slots:
     void restart();
     void toGameScene();
+    void toIndexScene();
 
 private:
     QSqlDatabase db;

@@ -84,7 +84,7 @@ IndexScene::IndexScene(QObject *parent)
         rankScore[i]->setZValue(2);
         rankScore[i]->setPos(320, 162+i*38.5);
         rankScore[i]->setFont(rankFont);
-        addItem( rankScore[i]);
+        addItem(rankScore[i]);
         rankScore[i]->hide();
     }
 
@@ -98,6 +98,12 @@ void IndexScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         showRank();
     else if(backIconRect->contains(event->scenePos().toPoint()) && rankon)
         hideRank();
+}
+
+void IndexScene::resetIcon()    // recover unpressed state when scene change
+{
+    startIcon->setImage(startIcon->getType());
+    backIcon->setImage(backIcon->getType());
 }
 
 void IndexScene::showRank() // start pos bug
@@ -115,7 +121,7 @@ void IndexScene::hideRank()
     rankon = false;
     rankBG->hide();
     backIcon->hide();
-    backIcon->setImage(backIcon->getType());
+    resetIcon();
     for(int i=0; i<10; i++)
         rankName[i]->hide(), rankID[i]->hide(), rankScore[i]->hide();
 }

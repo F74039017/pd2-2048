@@ -4,6 +4,8 @@
 #define dbName "rank.db"
 #define tbName "rank"
 #include "Game.h"
+#include "Mainwindow.h"
+#include <QGraphicsSceneMouseEvent>
 
 GameScene::GameScene(QObject *parent)
     :QGraphicsScene(parent)
@@ -71,22 +73,89 @@ GameScene::GameScene(QObject *parent)
     gameoverBG->hide();
     gameoverLabel = new QGraphicsSimpleTextItem("Game Over");
     gameoverLabel->setPos(55, 80);
-    QFont gameoverLabelFont("URW Chancery L", 55);
-    gameoverLabelFont.setItalic(true);
-    gameoverLabelFont.setBold(true);
-    gameoverLabelFont.setLetterSpacing(QFont::AbsoluteSpacing, 10);
-    gameoverLabel->setFont(gameoverLabelFont);
+    gameoverLabel->setBrush(QColor(Qt::black));
+    QPen gameoverPen(QColor(Qt::white));
+    gameoverPen.setWidth(3);
+    gameoverLabel->setPen(gameoverPen);
+    QFont gameoverFont("URW Chancery L", 55);
+    gameoverFont.setItalic(true);
+    gameoverFont.setBold(true);
+    gameoverFont.setLetterSpacing(QFont::AbsoluteSpacing, 10);
+    gameoverLabel->setFont(gameoverFont);
     addItem(gameoverLabel);
     gameoverLabel->hide();
+
+    /* Gameover Score */
+    gameoverScoreLabel = new QGraphicsSimpleTextItem("Your Score:");
+    gameoverScoreLabel->setPos(85, 250);
+    gameoverScoreLabel->setBrush(QColor(Qt::black));
+    gameoverFont.setPointSize(32);
+    gameoverFont.setBold(true);
+    gameoverFont.setLetterSpacing(QFont::AbsoluteSpacing, 3);
+    gameoverPen.setWidth(1);
+    gameoverScoreLabel->setPen(gameoverPen);
+    gameoverScoreLabel->setFont(gameoverFont);
+    addItem(gameoverScoreLabel);
+    gameoverScoreLabel->hide();
+    bestScoreLabel = new QGraphicsSimpleTextItem("Your Best:");
+    bestScoreLabel->setPos(85, 350);
+    bestScoreLabel->setBrush(QColor(Qt::black));
+    bestScoreLabel->setPen(gameoverPen);
+    bestScoreLabel->setFont(gameoverFont);
+    addItem(bestScoreLabel);
+    bestScoreLabel->hide();
+    gameoverScore = new QGraphicsSimpleTextItem("0");
+    gameoverScore->setPos(310, 250);
+    gameoverScore->setBrush(QColor(Qt::black));
+    gameoverScore->setPen(gameoverPen);
+    gameoverScore->setFont(gameoverFont);
+    addItem(gameoverScore);
+    gameoverScore->hide();
+    bestScore = new QGraphicsSimpleTextItem("0");
+    bestScore->setPos(310, 350);
+    bestScore->setBrush(QColor(Qt::black));
+    bestScore->setPen(gameoverPen);
+    bestScore->setFont(gameoverFont);
+    addItem(bestScore);
+    bestScore->hide();
+
+    /* again icon */
+    againIcon = new Icon(Icon::AGAIN);
+    againIcon->setScale(0.28);
+    againIcon->setPos(40, 480);
+    addItem(againIcon);
+    againIcon->hide();
+
+    /* back icon */
+    backIcon = new Icon(Icon::BACK);
+    backIcon->setScale(0.28);
+    backIcon->setPos(300, 480);
+    addItem(backIcon);
+    backIcon->hide();
+
+    /* rect init */
+    int w, h;
+    w = againIcon->boundingRect().width()*0.28;
+    h = againIcon->boundingRect().height()*0.28;
+    againIconRect = new QRect(40, 480, w, h);
+    backIconRect = new QRect(300, 480, w, h);
+
+    /* init group */
+    group = new QParallelAnimationGroup(this);
+
+    /* connect animation */
+    QObject::connect(group, SIGNAL(finished()), this, SLOT(endAnimation()));
 }
 
 void GameScene::init()
 {
+    /* get number of rank */
     QSqlQuery qry;
     qry.exec(QString("SELECT COUNT(*) FROM %1").arg(tbName));
     qry.next();
 //    qDebug() << "row now is " << qry.value(0).toString();
     recordNum = qry.value(0).toInt();
+
 
     /* init squares */
     for(int i=0; i<4; i++)  // temp to show all squares in the window
@@ -102,10 +171,34 @@ void GameScene::init()
     /* init num */
     addnum = 2; // start with 2 squares
 
-    /* init gameOver flag */
+    /* isAnimation */
+    isAnimation = false;
+
+    /* init recover point of squares */
+    for(int i=0; i<4; i++)
+        for(int j=0; j<4; j++)
+            squares[i][j]->setRecoverPoint();
+
+    /* init gameover */
+    resetIcon();
     theEnd = false;
+    isWin = false;
+    gameoverBG->hide();
+    gameoverLabel->hide();
+    gameoverScoreLabel->hide();
+    bestScoreLabel->hide();
+    gameoverScore->hide();
+    bestScore->hide();
+    againIcon->hide();
+    backIcon->hide();
 
     addsquares();
+}
+
+void GameScene::resetIcon()
+{
+    backIcon->setImage(backIcon->getType());
+    againIcon->setImage(againIcon->getType());
 }
 
 void GameScene::addsquares()
@@ -150,40 +243,70 @@ void GameScene::keyPressEvent(QKeyEvent *event)
         combine(4);
     else
         return;
-    addnum = checkend();
-//    qDebug() << "addnum: " << addnum << endl;
-    if(!hasMoved && !addnum)
-        gameover();
-    if(hasMoved)
-        addsquares();
-    if(event->key() == Qt::Key_R)
-        init();
+
 }
 
-int GameScene::checkend()    // 2=>normal 1=>left-one 0=>end
+void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(againIconRect->contains(event->scenePos().toPoint()) && theEnd)
+        init();
+    else if(backIconRect->contains(event->scenePos().toPoint()) && theEnd)
+        emit pressStart();
+}
+
+int GameScene::checkend()    // 1=>normal 0=>end
 {
     int cnt=0;
     for(int i=0; i<4; i++)
         for(int j=0; j<4; j++)
+        {
             if(squares[i][j]->isExist())
                 cnt++;
-    if(16-cnt>1)
+            if(squares[i][j]->getValue() == 2048)   // win
+            {
+                isWin = true;
+                return 1;
+            }
+        }
+    if(16-cnt>=1)
         return 1;
     else
-        return 16-cnt;
+        return 0;
 }
 
 void GameScene::gameover()   // show rank dialog in the future
 {
-    gameoverBG->show();
-    gameoverLabel->show();
-    theEnd = true;
-//    qDebug() << "gameover" << endl;
-    recordNum++;
+    /* insert user and score to database */
     QSqlQuery qry;
     QString userName = dynamic_cast<Game*>(parent())->getuserName();
     if(!qry.exec(QString("INSERT INTO %1 VALUES (%2, '%3', %4)").arg(tbName, QString::number(recordNum), userName, score->text())));
         qDebug() << qry.lastError().text();
+
+    gameoverScore->setText(score->text());
+    if(qry.exec(QString("SELECT score FROM %1 WHERE name GLOB '%2' ORDER BY score DESC").arg(tbName, userName)))
+    {
+        qry.next();
+        bestScore->setText(qry.value(0).toString());
+    }
+    else
+        qDebug() << "Fail to get best score";
+
+    if(isWin)
+        gameoverLabel->setText("You Win"), gameoverLabel->setPos(100, 80);
+    else
+        gameoverLabel->setText("Game Over"), gameoverLabel->setPos(55, 80);
+
+    gameoverBG->show();
+    gameoverLabel->show();
+    gameoverScoreLabel->show();
+    bestScoreLabel->show();
+    gameoverScore->show();
+    bestScore->show();
+    againIcon->show();
+    backIcon->show();
+    theEnd = true;
+//    qDebug() << "gameover" << endl;
+    recordNum++;
 }
 
 void GameScene::updateExist()
@@ -200,8 +323,12 @@ void GameScene::updateExist()
 
 void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
 {
+    if(isAnimation)
+        return;
+
     addValue = 0;   // addValue init to 0
     hasMoved = false;
+
     if(dir==1)  // up
     {
         for(int i=0; i<4; i++)
@@ -218,7 +345,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 else
                     squares[++id][i]->setValue(cur), last=cur;
                 if(!(id==j))
+                {
                     squares[j][i]->setValue(0), hasMoved = true;
+                    squares[j][i]->setMoveEnd(squares[id][i]->pos());
+                    group->addAnimation(squares[j][i]->getAnimation());
+                }
             }
         }
     }
@@ -238,7 +369,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 else
                     squares[--id][i]->setValue(cur), last=cur;
                 if(!(id==j))
+                {
                     squares[j][i]->setValue(0), hasMoved = true;
+                    squares[j][i]->setMoveEnd(squares[id][i]->pos());
+                    group->addAnimation(squares[j][i]->getAnimation());
+                }
             }
         }
     }
@@ -258,7 +393,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 else
                     squares[i][++id]->setValue(cur), last=cur;
                 if(!(id==j))
+                {
                     squares[i][j]->setValue(0), hasMoved = true;
+                    squares[i][j]->setMoveEnd(squares[i][id]->pos());
+                    group->addAnimation(squares[i][j]->getAnimation());
+                }
             }
         }
     }
@@ -278,14 +417,17 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 else
                     squares[i][--id]->setValue(cur), last=cur;
                 if(!(id==j))
+                {
                     squares[i][j]->setValue(0), hasMoved = true;
+                    squares[i][j]->setMoveEnd(squares[i][id]->pos());
+                    group->addAnimation(squares[i][j]->getAnimation());
+                }
             }
         }
     }
     if(hasMoved)
         addValue += 2;
-    updateExist();
-    addScore(); // update score
+    startAnimation();
 }
 
 void GameScene::addScore()
@@ -294,3 +436,31 @@ void GameScene::addScore()
     score->setText(QString::number(newScore));
 }
 
+void GameScene::startAnimation()
+{
+    isAnimation = true; // block input
+    group->start();
+}
+
+void GameScene::endAnimation()
+{
+    //squares[0][0]->setValue(2048);  //-- test win
+
+    /* after finish */
+    for(int i=0; i<4; i++)
+        for(int j=0; j<4; j++)
+            squares[i][j]->recoverPos();
+    updateExist();
+    addScore(); // update score
+    group->clear();
+    isAnimation = false;
+
+    addnum = checkend();
+//    qDebug() << "addnum: " << addnum << endl;
+
+    if((!hasMoved && !addnum) || isWin)
+        gameover();
+
+    if(hasMoved)
+        addsquares();
+}

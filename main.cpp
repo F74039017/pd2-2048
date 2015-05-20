@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     int x = (desktop->width()-W)/2;
     int y = (desktop->height()-H)/4;
     Mainwindow w;
+    w.setWindowIcon(QIcon(":/images/images/square2048.png"));
     w.move(x, y);
     w.show();
     w.askUserName();

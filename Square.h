@@ -3,10 +3,13 @@
 
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSimpleTextItem>
+#include <QPropertyAnimation>
 
-class Square: public QObject, public QGraphicsPixmapItem    // change pixitem
+class Square: public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
+    Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+
 public:
     Square(QGraphicsItem * parent = 0);
 
@@ -17,12 +20,18 @@ public:
     void setcor(int x, int y);
     int getX();
     int getY();
+    QPropertyAnimation *getAnimation();
+    void setMoveEnd(QPointF e);
+    void recoverPos();
+    void setRecoverPoint();
 
 private:
     int value;
     bool exist;
     int x;
     int y;
+    QPointF recoverPoint;
+    QPropertyAnimation *move;
 
     void init();
     void updatePixmap();

@@ -13,10 +13,13 @@ Mainwindow::Mainwindow()
     /* create action */
     restartAct = new QAction("&Restart", this);
     QObject::connect(restartAct, SIGNAL(triggered()), game, SLOT(restart()));
+    giveupAct = new QAction("&GiveUp", this);
+    QObject::connect(giveupAct, SIGNAL(triggered()), game, SLOT(toIndexScene()));
 
     /* create menu */
     menu = menuBar()->addMenu("&Option");
     menu->addAction(restartAct);
+    menu->addAction(giveupAct);
 
     setFixedSize(sizeHint());   // disable to resize from drag border
 }

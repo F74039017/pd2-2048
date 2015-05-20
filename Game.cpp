@@ -7,11 +7,11 @@ Game::Game(QWidget * parent)
 {
     /* construct gameScene */
     gameScene = new GameScene(this);
-//    setScene(gameScene);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    setFixedSize(500,650);
     setMinimumSize(500, 650);
+//    scale(1.5, 1.5);
+    QObject::connect(gameScene, SIGNAL(pressStart()), this, SLOT(toIndexScene()));
 
     /* construct indexScene */
     indexScene = new IndexScene(this);
@@ -55,5 +55,12 @@ void Game::restart()
 
 void Game::toGameScene()
 {
+    gameScene->init();
     setScene(gameScene);
+}
+
+void Game::toIndexScene()
+{
+    indexScene->resetIcon();
+    setScene(indexScene);
 }

@@ -1,6 +1,7 @@
 #include "Square.h"
+#include <QDebug>
 
-Square::Square(QGraphicsItem * parent)    // reimplement when change to pixitem
+Square::Square(QGraphicsItem * parent)
         :QGraphicsPixmapItem(parent)
 {
     init();
@@ -10,7 +11,6 @@ void Square::setValue(int x)
 {
     value = x;
     updatePixmap();
-//    setText(QString::number(value));    // temp for simpletext class
 }
 
 int Square::getValue()
@@ -46,6 +46,29 @@ int Square::getX()
 int Square::getY()
 {
     return y;
+}
+
+QPropertyAnimation *Square::getAnimation()
+{
+    return move;
+}
+
+void Square::setMoveEnd(QPointF e)
+{
+    move = new QPropertyAnimation(this, "pos", this);
+    move->setDuration(10);  // 50 is moderate
+    move->setStartValue(recoverPoint);
+    move->setEndValue(e);
+}
+
+void Square::recoverPos()
+{
+    setPos(recoverPoint);
+}
+
+void Square::setRecoverPoint()
+{
+    recoverPoint = pos();
 }
 
 void Square::init()
