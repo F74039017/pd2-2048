@@ -1,6 +1,7 @@
 #include "Game.h"
 #define dbName "rank.db"
 #define tbName "rank"
+#include "Mainwindow.h"
 
 Game::Game(QWidget * parent)
     :QGraphicsView(parent)
@@ -17,6 +18,14 @@ Game::Game(QWidget * parent)
     indexScene = new IndexScene(this);
     setScene(indexScene);
     QObject::connect(indexScene, SIGNAL(pressStart()), this, SLOT(toGameScene()));
+
+    /* BGM music */
+    bgm = new QMediaPlayer();
+    playList = new QMediaPlaylist();
+    playList->addMedia(QUrl("qrc:/sounds/sounds/BGM.wav"));
+    playList->setPlaybackMode(QMediaPlaylist::Loop);
+    bgm->setPlaylist(playList);
+    bgm->play();
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
@@ -57,10 +66,12 @@ void Game::toGameScene()
 {
     gameScene->init();
     setScene(gameScene);
+    emit toGame();
 }
 
 void Game::toIndexScene()
 {
     indexScene->resetIcon();
     setScene(indexScene);
+    emit toIndex();
 }

@@ -8,10 +8,21 @@ Icon::Icon(Icon::Type type, QGraphicsItem * parent)
     setAcceptHoverEvents(true);
     this->type = type;
     setImage(type);
+
+    /* enter icon sound */
+    inSound = new QSoundEffect();
+    inSound->setSource(QUrl("qrc:/sounds/sounds/icon_in.wav"));
+    inSound->setVolume(0.8);
+
+    /* click icon sound */
+    clickSound = new QSoundEffect();
+    clickSound->setSource(QUrl("qrc:/sounds/sounds/icon_click.wav"));
 }
 
 void Icon::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+    inSound->play();
+
     switch(type)
     {
         case START:
@@ -56,6 +67,11 @@ void Icon::setImage(Icon::Type type)
 Icon::Type Icon::getType()
 {
     return type;
+}
+
+void Icon::playClickSound()
+{
+    clickSound->play();
 }
 
 

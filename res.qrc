@@ -25,4 +25,9 @@
         <file>images/start_icon.png</file>
         <file>images/start_icon_pressed.png</file>
     </qresource>
+    <qresource prefix="/sounds">
+        <file>sounds/icon_in.wav</file>
+        <file>sounds/BGM.wav</file>
+        <file>sounds/icon_click.wav</file>
+    </qresource>
 </RCC>

@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include "GameScene.h"
 #include "IndexScene.h"
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 class Game: public QGraphicsView{
     Q_OBJECT
@@ -13,6 +15,10 @@ public:
     void init();
     void setUserName(QString name);
     QString getuserName();
+
+signals:
+    void toGame();
+    void toIndex();
 
 public slots:
     void restart();
@@ -24,6 +30,8 @@ private:
     GameScene* gameScene;
     IndexScene *indexScene;
     QString userName;
+    QMediaPlayer *bgm;
+    QMediaPlaylist *playList;
 
 };
 

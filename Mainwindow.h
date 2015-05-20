@@ -14,6 +14,10 @@ public:
     void startGame();
     void askUserName();
 
+public slots:
+    void menuEnable();
+    void menuDisable();
+
 private:
     QMenu *menu;
     QAction *restartAct;

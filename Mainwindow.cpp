@@ -20,6 +20,9 @@ Mainwindow::Mainwindow()
     menu = menuBar()->addMenu("&Option");
     menu->addAction(restartAct);
     menu->addAction(giveupAct);
+    menu->setDisabled(true);
+    QObject::connect(game, SIGNAL(toGame()), this, SLOT(menuEnable()));
+    QObject::connect(game, SIGNAL(toIndex()), this, SLOT(menuDisable()));
 
     setFixedSize(sizeHint());   // disable to resize from drag border
 }
@@ -37,5 +40,15 @@ void Mainwindow::askUserName()
         game->setUserName("Anonymous");
     else
         game->setUserName(text);
+}
+
+void Mainwindow::menuEnable()
+{
+    menu->setEnabled(true);
+}
+
+void Mainwindow::menuDisable()
+{
+    menu->setDisabled(true);
 }
 

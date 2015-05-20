@@ -1,6 +1,7 @@
 #ifndef ICON_H
 #define ICON_H
 #include <QGraphicsPixmapItem>
+#include <QSoundEffect>
 
 class Icon : public QGraphicsPixmapItem
 {
@@ -11,9 +12,12 @@ public:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
     void setImage(Icon::Type type);
     Icon::Type getType();
+    void playClickSound();
 
 private:
     Type type;
+    QSoundEffect *inSound;
+    QSoundEffect *clickSound;
 };
 
 #endif // ICON_H

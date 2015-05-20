@@ -249,9 +249,15 @@ void GameScene::keyPressEvent(QKeyEvent *event)
 void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(againIconRect->contains(event->scenePos().toPoint()) && theEnd)
+    {
+        againIcon->playClickSound();
         init();
+    }
     else if(backIconRect->contains(event->scenePos().toPoint()) && theEnd)
-        emit pressStart();
+    {
+        backIcon->playClickSound();
+       emit pressStart();
+    }
 }
 
 int GameScene::checkend()    // 1=>normal 0=>end

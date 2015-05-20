@@ -56,7 +56,7 @@ QPropertyAnimation *Square::getAnimation()
 void Square::setMoveEnd(QPointF e)
 {
     move = new QPropertyAnimation(this, "pos", this);
-    move->setDuration(10);  // 50 is moderate
+    move->setDuration(50);  // 50 is moderate
     move->setStartValue(recoverPoint);
     move->setEndValue(e);
 }

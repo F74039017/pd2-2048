@@ -93,11 +93,20 @@ IndexScene::IndexScene(QObject *parent)
 void IndexScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(startIconRect->contains(event->scenePos().toPoint()) && !rankon)
+    {
+        startIcon->playClickSound();
         emit pressStart();
+    }
     else if(rankIconRect->contains(event->scenePos().toPoint()) && !rankon)
+    {
+        rankIcon->playClickSound();
         showRank();
+    }
     else if(backIconRect->contains(event->scenePos().toPoint()) && rankon)
+    {
+        backIcon->playClickSound();
         hideRank();
+    }
 }
 
 void IndexScene::resetIcon()    // recover unpressed state when scene change
