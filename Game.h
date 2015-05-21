@@ -6,6 +6,7 @@
 #include "IndexScene.h"
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include "GameScene.h"
 
 class Game: public QGraphicsView{
     Q_OBJECT
@@ -24,6 +25,8 @@ public slots:
     void restart();
     void toGameScene();
     void toIndexScene();
+    void setClassMode();
+    void setSurvivalMode();
 
 private:
     QSqlDatabase db;

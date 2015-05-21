@@ -13,6 +13,7 @@ Icon::Icon(Icon::Type type, QGraphicsItem * parent)
     inSound = new QSoundEffect();
     inSound->setSource(QUrl("qrc:/sounds/sounds/icon_in.wav"));
     inSound->setVolume(0.8);
+    inSoundFlag = false;
 
     /* click icon sound */
     clickSound = new QSoundEffect();
@@ -21,7 +22,8 @@ Icon::Icon(Icon::Type type, QGraphicsItem * parent)
 
 void Icon::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
-    inSound->play();
+    if(inSoundFlag)
+        inSound->play();
 
     switch(type)
     {
@@ -72,6 +74,11 @@ Icon::Type Icon::getType()
 void Icon::playClickSound()
 {
     clickSound->play();
+}
+
+void Icon::setSoundFlag(bool flag)
+{
+    this->inSoundFlag = flag;
 }
 
 

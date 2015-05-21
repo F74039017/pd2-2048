@@ -19,9 +19,12 @@ public slots:
     void menuDisable();
 
 private:
-    QMenu *menu;
+    QMenu *optionMenu;
+    QMenu *modeMenu;
     QAction *restartAct;
     QAction *giveupAct;
+    QAction *survivalAct;
+    QAction *classicAct;
     Game *game;
 };
 

@@ -13,11 +13,13 @@ public:
     void setImage(Icon::Type type);
     Icon::Type getType();
     void playClickSound();
+    void setSoundFlag(bool flag);
 
 private:
     Type type;
     QSoundEffect *inSound;
     QSoundEffect *clickSound;
+    bool inSoundFlag;
 };
 
 #endif // ICON_H

@@ -18,12 +18,14 @@ IndexScene::IndexScene(QObject *parent)
     startIcon->setScale(0.3);
     startIcon->setPos(150, 350);
     addItem(startIcon);
+    startIcon->setSoundFlag(true);
 
     /* rank icon */
     rankIcon = new Icon(Icon::RANK);
     rankIcon->setScale(0.3);
     rankIcon->setPos(150, 475);
     addItem(rankIcon);
+    rankIcon->setSoundFlag(true);
 
     /* rect init */
     int w, h;
@@ -52,6 +54,7 @@ IndexScene::IndexScene(QObject *parent)
     backIcon->setZValue(2);
     addItem(backIcon);
     backIcon->hide();
+    backIcon->setSoundFlag(false);
 
     /* init rank id */
     QFont rankFont("URW Chancery L", 25);
@@ -123,6 +126,9 @@ void IndexScene::showRank() // start pos bug
     for(int i=0; i<10; i++)
         rankName[i]->show(), rankID[i]->show(), rankScore[i]->show();
     updateRank();
+    startIcon->setSoundFlag(false);
+    rankIcon->setSoundFlag(false);
+    backIcon->setSoundFlag(true);
 }
 
 void IndexScene::hideRank()
@@ -133,6 +139,9 @@ void IndexScene::hideRank()
     resetIcon();
     for(int i=0; i<10; i++)
         rankName[i]->hide(), rankID[i]->hide(), rankScore[i]->hide();
+    startIcon->setSoundFlag(true);
+    rankIcon->setSoundFlag(true);
+    backIcon->setSoundFlag(false);
 }
 
 void IndexScene::updateRank()

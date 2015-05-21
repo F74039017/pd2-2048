@@ -70,7 +70,6 @@ GameScene::GameScene(QObject *parent)
     gameoverBG->setOpacity(0.85);
     gameoverBG->setPen(Qt::NoPen);
     addItem(gameoverBG);
-    gameoverBG->hide();
     gameoverLabel = new QGraphicsSimpleTextItem("Game Over");
     gameoverLabel->setPos(55, 80);
     gameoverLabel->setBrush(QColor(Qt::black));
@@ -83,7 +82,6 @@ GameScene::GameScene(QObject *parent)
     gameoverFont.setLetterSpacing(QFont::AbsoluteSpacing, 10);
     gameoverLabel->setFont(gameoverFont);
     addItem(gameoverLabel);
-    gameoverLabel->hide();
 
     /* Gameover Score */
     gameoverScoreLabel = new QGraphicsSimpleTextItem("Your Score:");
@@ -96,28 +94,24 @@ GameScene::GameScene(QObject *parent)
     gameoverScoreLabel->setPen(gameoverPen);
     gameoverScoreLabel->setFont(gameoverFont);
     addItem(gameoverScoreLabel);
-    gameoverScoreLabel->hide();
     bestScoreLabel = new QGraphicsSimpleTextItem("Your Best:");
     bestScoreLabel->setPos(85, 350);
     bestScoreLabel->setBrush(QColor(Qt::black));
     bestScoreLabel->setPen(gameoverPen);
     bestScoreLabel->setFont(gameoverFont);
     addItem(bestScoreLabel);
-    bestScoreLabel->hide();
     gameoverScore = new QGraphicsSimpleTextItem("0");
     gameoverScore->setPos(310, 250);
     gameoverScore->setBrush(QColor(Qt::black));
     gameoverScore->setPen(gameoverPen);
     gameoverScore->setFont(gameoverFont);
     addItem(gameoverScore);
-    gameoverScore->hide();
     bestScore = new QGraphicsSimpleTextItem("0");
     bestScore->setPos(310, 350);
     bestScore->setBrush(QColor(Qt::black));
     bestScore->setPen(gameoverPen);
     bestScore->setFont(gameoverFont);
     addItem(bestScore);
-    bestScore->hide();
 
     /* again icon */
     againIcon = new Icon(Icon::AGAIN);
@@ -131,7 +125,6 @@ GameScene::GameScene(QObject *parent)
     backIcon->setScale(0.28);
     backIcon->setPos(300, 480);
     addItem(backIcon);
-    backIcon->hide();
 
     /* rect init */
     int w, h;
@@ -145,6 +138,20 @@ GameScene::GameScene(QObject *parent)
 
     /* connect animation */
     QObject::connect(group, SIGNAL(finished()), this, SLOT(endAnimation()));
+
+    /* time (survive) mdoe */
+    timer = new QTimer(this);
+    timeLabel = new QGraphicsSimpleTextItem("15");
+    timeLabel->setPos(400, 20);
+    timeLabel->setBrush(QBrush(QColor(Qt::yellow)));
+    QFont timeLabelFont("URW Chancery L", 25);
+    timeLabelFont.setItalic(true);
+    timeLabel->setFont(timeLabelFont);
+    addItem(timeLabel);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(countDown()));
+
+    /* init mode */
+    mode = GameScene::CLASSIC;
 }
 
 void GameScene::init()
@@ -184,13 +191,35 @@ void GameScene::init()
     theEnd = false;
     isWin = false;
     gameoverBG->hide();
+    gameoverBG->setZValue(1);
     gameoverLabel->hide();
+    gameoverLabel->setZValue(1);
     gameoverScoreLabel->hide();
+    gameoverScoreLabel->setZValue(1);
     bestScoreLabel->hide();
+    bestScoreLabel->setZValue(1);
     gameoverScore->hide();
+    gameoverScore->setZValue(1);
     bestScore->hide();
+    bestScore->setZValue(1);
     againIcon->hide();
+    againIcon->setZValue(1);
     backIcon->hide();
+    backIcon->setZValue(1);
+    backIcon->setSoundFlag(false);
+    againIcon->setSoundFlag(false);
+
+    /* reset time */
+    if(mode == GameScene::CLASSIC)
+    {
+        timeLabel->hide();
+    }
+    else if(mode == GameScene::SURVIVAL)
+    {
+        timeLabel->show();
+        timeLabel->setText("15");
+        timer->start(1000);
+    }
 
     addsquares();
 }
@@ -199,6 +228,11 @@ void GameScene::resetIcon()
 {
     backIcon->setImage(backIcon->getType());
     againIcon->setImage(againIcon->getType());
+}
+
+void GameScene::setMode(GameScene::Mode mode)
+{
+    this->mode = mode;
 }
 
 void GameScene::addsquares()
@@ -282,6 +316,9 @@ int GameScene::checkend()    // 1=>normal 0=>end
 
 void GameScene::gameover()   // show rank dialog in the future
 {
+    if(mode == GameScene::SURVIVAL)
+        timer->stop();
+
     /* insert user and score to database */
     QSqlQuery qry;
     QString userName = dynamic_cast<Game*>(parent())->getuserName();
@@ -310,6 +347,8 @@ void GameScene::gameover()   // show rank dialog in the future
     bestScore->show();
     againIcon->show();
     backIcon->show();
+    againIcon->setSoundFlag(true);
+    backIcon->setSoundFlag(true);
     theEnd = true;
 //    qDebug() << "gameover" << endl;
     recordNum++;
@@ -438,6 +477,15 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
 
 void GameScene::addScore()
 {
+    /* survival mode increase 2 second when merged point>=16 */
+    if(mode==GameScene::SURVIVAL && addValue>=32)
+        timeLabel->setText(QString::number(timeLabel->text().toInt()+2));
+
+    /* survival mode increase 2*value for rank */
+//    qDebug() << addValue;
+    if(mode==GameScene::SURVIVAL)
+        addValue <<= 1;
+//    qDebug() << addValue;
     int newScore = score->text().toInt()+addValue;
     score->setText(QString::number(newScore));
 }
@@ -469,4 +517,13 @@ void GameScene::endAnimation()
 
     if(hasMoved)
         addsquares();
+}
+
+void GameScene::countDown()
+{
+    int nextTime = timeLabel->text().toInt()-1;
+    if(nextTime == -1)
+        gameover();
+    else
+        timeLabel->setText(QString::number(nextTime));
 }

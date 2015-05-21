@@ -13,6 +13,8 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include "Icon.h"
+#include <QTimer>
+
 using namespace std;
 
 class GameScene: public QGraphicsScene
@@ -20,18 +22,21 @@ class GameScene: public QGraphicsScene
     Q_OBJECT
 
 public:
+    enum Mode{CLASSIC, SURVIVAL, XTILE};
     GameScene(QObject *parent=0);
     void addsquares();
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void init();
     void resetIcon();
+    void setMode(GameScene::Mode mode);
 
 signals:
     void pressStart();
 
 public slots:
     void endAnimation();
+    void countDown();
 
 private:
     QGraphicsPixmapItem *gameBG;
@@ -58,6 +63,10 @@ private:
     QRect *backIconRect;
     QParallelAnimationGroup *group;
     bool isWin;
+    QTimer *timer;
+    QGraphicsSimpleTextItem *timeLabel;
+    GameScene::Mode mode;
+
 
     int checkend();
     void gameover();

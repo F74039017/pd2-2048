@@ -25,7 +25,7 @@ Game::Game(QWidget * parent)
     playList->addMedia(QUrl("qrc:/sounds/sounds/BGM.wav"));
     playList->setPlaybackMode(QMediaPlaylist::Loop);
     bgm->setPlaylist(playList);
-    bgm->play();
+    bgm->play();  //-- mute when test
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
@@ -74,4 +74,16 @@ void Game::toIndexScene()
     indexScene->resetIcon();
     setScene(indexScene);
     emit toIndex();
+}
+
+void Game::setClassMode()
+{
+    gameScene->setMode(GameScene::CLASSIC);
+    gameScene->init();
+}
+
+void Game::setSurvivalMode()
+{
+    gameScene->setMode(GameScene::SURVIVAL);
+    gameScene->init();
 }
