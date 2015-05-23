@@ -162,6 +162,7 @@ void GameScene::init()
     qry.next();
 //    qDebug() << "row now is " << qry.value(0).toString();
     recordNum = qry.value(0).toInt();
+//    qDebug() << "update new recordNum = " << recordNum;
 
 
     /* init squares */
@@ -190,6 +191,7 @@ void GameScene::init()
     resetIcon();
     theEnd = false;
     isWin = false;
+    isCont = false;
     gameoverBG->hide();
     gameoverBG->setZValue(1);
     gameoverLabel->hide();
@@ -220,6 +222,10 @@ void GameScene::init()
         timeLabel->setText("15");
         timer->start(1000);
     }
+
+    /* get userName */
+    userName = dynamic_cast<Game*>(parent())->getuserName();
+
 
     addsquares();
 }
@@ -284,13 +290,23 @@ void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(againIconRect->contains(event->scenePos().toPoint()) && theEnd)
     {
-        againIcon->playClickSound();
-        init();
+        if(!Mainwindow::soundMute)
+            againIcon->playClickSound();
+        if(!isWin)
+            init();
+        else
+        {
+            isCont = true;
+            cont();
+        }
     }
     else if(backIconRect->contains(event->scenePos().toPoint()) && theEnd)
     {
-        backIcon->playClickSound();
-       emit pressStart();
+        if(!Mainwindow::soundMute)
+            backIcon->playClickSound();
+        if(isWin)
+            insertRank();
+        emit pressBack();
     }
 }
 
@@ -302,7 +318,7 @@ int GameScene::checkend()    // 1=>normal 0=>end
         {
             if(squares[i][j]->isExist())
                 cnt++;
-            if(squares[i][j]->getValue() == 2048)   // win
+            if(squares[i][j]->getValue()==2048 && !isCont)   // win check, no use when cont
             {
                 isWin = true;
                 return 1;
@@ -320,12 +336,11 @@ void GameScene::gameover()   // show rank dialog in the future
         timer->stop();
 
     /* insert user and score to database */
-    QSqlQuery qry;
-    QString userName = dynamic_cast<Game*>(parent())->getuserName();
-    if(!qry.exec(QString("INSERT INTO %1 VALUES (%2, '%3', %4)").arg(tbName, QString::number(recordNum), userName, score->text())));
-        qDebug() << qry.lastError().text();
+    if(!isWin)
+        insertRank();
 
     gameoverScore->setText(score->text());
+    QSqlQuery qry;
     if(qry.exec(QString("SELECT score FROM %1 WHERE name GLOB '%2' ORDER BY score DESC").arg(tbName, userName)))
     {
         qry.next();
@@ -335,10 +350,17 @@ void GameScene::gameover()   // show rank dialog in the future
         qDebug() << "Fail to get best score";
 
     if(isWin)
+    {
+        againIcon->setType(Icon::CONT);
         gameoverLabel->setText("You Win"), gameoverLabel->setPos(100, 80);
+    }
     else
+    {
+        againIcon->setType(Icon::AGAIN);
         gameoverLabel->setText("Game Over"), gameoverLabel->setPos(55, 80);
+    }
 
+    /* show gameover panel and set flag */
     gameoverBG->show();
     gameoverLabel->show();
     gameoverScoreLabel->show();
@@ -351,7 +373,6 @@ void GameScene::gameover()   // show rank dialog in the future
     backIcon->setSoundFlag(true);
     theEnd = true;
 //    qDebug() << "gameover" << endl;
-    recordNum++;
 }
 
 void GameScene::updateExist()
@@ -385,7 +406,7 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[j][i]->isExist())
                     continue;
                 int cur = squares[j][i]->getValue();
-                if(cur==last)
+                if(cur==last && cur!=Icon::maxValue)
                     squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
                 else
                     squares[++id][i]->setValue(cur), last=cur;
@@ -409,7 +430,7 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[j][i]->isExist())
                     continue;
                 int cur = squares[j][i]->getValue();
-                if(cur==last)
+                if(cur==last && cur!=Icon::maxValue)
                     squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
                 else
                     squares[--id][i]->setValue(cur), last=cur;
@@ -433,7 +454,7 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[i][j]->isExist())
                     continue;
                 int cur = squares[i][j]->getValue();
-                if(cur==last)
+                if(cur==last && cur!=Icon::maxValue)
                     squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
                 else
                     squares[i][++id]->setValue(cur), last=cur;
@@ -457,7 +478,7 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[i][j]->isExist())
                     continue;
                 int cur = squares[i][j]->getValue();
-                if(cur==last)
+                if(cur==last && cur!=Icon::maxValue)
                     squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
                 else
                     squares[i][--id]->setValue(cur), last=cur;
@@ -496,9 +517,32 @@ void GameScene::startAnimation()
     group->start();
 }
 
+void GameScene::cont()
+{
+    gameoverBG->hide();
+    gameoverLabel->hide();
+    gameoverScoreLabel->hide();
+    bestScoreLabel->hide();
+    gameoverScore->hide();
+    bestScore->hide();
+    againIcon->hide();
+    backIcon->hide();
+    againIcon->setSoundFlag(false);
+    backIcon->setSoundFlag(false);
+    theEnd = false;
+    isWin = false;
+}
+
+void GameScene::insertRank()
+{
+    QSqlQuery qry;
+    if(!qry.exec(QString("INSERT INTO %1 VALUES (%2, '%3', %4)").arg(tbName, QString::number(recordNum), userName, score->text())));
+        qDebug() << qry.lastError().text();
+}
+
 void GameScene::endAnimation()
 {
-    //squares[0][0]->setValue(2048);  //-- test win
+//    squares[0][0]->setValue(2048);  //-- test win
 
     /* after finish */
     for(int i=0; i<4; i++)

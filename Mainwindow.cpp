@@ -1,6 +1,8 @@
 #include "Mainwindow.h"
 #include <QInputDialog>
 
+bool Mainwindow::soundMute = true;  //-- true for test
+bool Mainwindow::musicMute = true;
 
 Mainwindow::Mainwindow()
 {
@@ -21,6 +23,12 @@ Mainwindow::Mainwindow()
     QObject::connect(restartAct, SIGNAL(triggered()), game, SLOT(restart()));
     giveupAct = new QAction("&GiveUp", this);
     QObject::connect(giveupAct, SIGNAL(triggered()), game, SLOT(toIndexScene()));
+        /* Mute */
+//    soundMuteAct = new QAction("&Sound");
+    musicMuteAct = new QAction("&Music", this);
+    QObject::connect(musicMuteAct, SIGNAL(triggered()), game, SLOT(muteMusic()));
+    soundMuteAct = new QAction("&Sound", this);
+    QObject::connect(soundMuteAct, SIGNAL(triggered()), this, SLOT(muteSound()));
 
 
     /* create menu */
@@ -35,6 +43,10 @@ Mainwindow::Mainwindow()
     optionMenu->setDisabled(true);
     QObject::connect(game, SIGNAL(toGame()), this, SLOT(menuEnable()));
     QObject::connect(game, SIGNAL(toIndex()), this, SLOT(menuDisable()));
+        /* Mute */
+    muteMenu = menuBar()->addMenu("&Mute");
+    muteMenu->addAction(musicMuteAct);
+    muteMenu->addAction(soundMuteAct);
 
     setFixedSize(sizeHint());   // disable to resize from drag border
 }
@@ -62,5 +74,10 @@ void Mainwindow::menuEnable()
 void Mainwindow::menuDisable()
 {
     optionMenu->setDisabled(true);
+}
+
+void Mainwindow::muteSound()
+{
+    soundMute = !soundMute;
 }
 

@@ -24,6 +24,9 @@
         <file>images/square2048.png</file>
         <file>images/start_icon.png</file>
         <file>images/start_icon_pressed.png</file>
+        <file>images/cont_icon.png</file>
+        <file>images/cont_icon_pressed.png</file>
+        <file>images/sqx.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>sounds/icon_in.wav</file>

@@ -27,6 +27,7 @@ public slots:
     void toIndexScene();
     void setClassMode();
     void setSurvivalMode();
+    void muteMusic();
 
 private:
     QSqlDatabase db;

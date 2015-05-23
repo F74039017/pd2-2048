@@ -32,7 +32,7 @@ public:
     void setMode(GameScene::Mode mode);
 
 signals:
-    void pressStart();
+    void pressBack();
 
 public slots:
     void endAnimation();
@@ -58,7 +58,7 @@ private:
     int addValue;
     bool isAnimation;
     Icon *backIcon;
-    Icon *againIcon;
+    Icon *againIcon;    // if win, "cont." instead
     QRect *againIconRect;
     QRect *backIconRect;
     QParallelAnimationGroup *group;
@@ -66,7 +66,10 @@ private:
     QTimer *timer;
     QGraphicsSimpleTextItem *timeLabel;
     GameScene::Mode mode;
+    QString userName;
+    bool isCont;
 
+//    int record[16];
 
     int checkend();
     void gameover();
@@ -74,6 +77,8 @@ private:
     void combine(int dir);
     void addScore();
     void startAnimation();
+    void cont();
+    void insertRank();
 };
 
 #endif // GAMESCENE_H

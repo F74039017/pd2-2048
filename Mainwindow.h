@@ -13,18 +13,24 @@ public:
     Mainwindow();
     void startGame();
     void askUserName();
+    static bool soundMute;
+    static bool musicMute;
 
 public slots:
     void menuEnable();
     void menuDisable();
+    void muteSound();
 
 private:
     QMenu *optionMenu;
     QMenu *modeMenu;
+    QMenu *muteMenu;
     QAction *restartAct;
     QAction *giveupAct;
     QAction *survivalAct;
     QAction *classicAct;
+    QAction *soundMuteAct;
+    QAction *musicMuteAct;
     Game *game;
 };
 

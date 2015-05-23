@@ -11,8 +11,7 @@ Game::Game(QWidget * parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setMinimumSize(500, 650);
-//    scale(1.5, 1.5);
-    QObject::connect(gameScene, SIGNAL(pressStart()), this, SLOT(toIndexScene()));
+    QObject::connect(gameScene, SIGNAL(pressBack()), this, SLOT(toIndexScene()));
 
     /* construct indexScene */
     indexScene = new IndexScene(this);
@@ -25,7 +24,8 @@ Game::Game(QWidget * parent)
     playList->addMedia(QUrl("qrc:/sounds/sounds/BGM.wav"));
     playList->setPlaybackMode(QMediaPlaylist::Loop);
     bgm->setPlaylist(playList);
-    bgm->play();  //-- mute when test
+    if(!Mainwindow::musicMute)
+        bgm->play();
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
@@ -86,4 +86,13 @@ void Game::setSurvivalMode()
 {
     gameScene->setMode(GameScene::SURVIVAL);
     gameScene->init();
+}
+
+void Game::muteMusic()
+{
+    Mainwindow::musicMute = !Mainwindow::musicMute;
+    if(Mainwindow::musicMute)
+        bgm->pause();
+    else
+        bgm->play();
 }

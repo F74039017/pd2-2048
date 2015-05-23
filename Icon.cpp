@@ -1,5 +1,6 @@
 #include "Icon.h"
 #include <QDebug>
+#include "Mainwindow.h"
 
 Icon::Icon(Icon::Type type, QGraphicsItem * parent)
     :QGraphicsPixmapItem(parent)
@@ -22,7 +23,7 @@ Icon::Icon(Icon::Type type, QGraphicsItem * parent)
 
 void Icon::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
-    if(inSoundFlag)
+    if(inSoundFlag && !Mainwindow::soundMute)
         inSound->play();
 
     switch(type)
@@ -39,6 +40,8 @@ void Icon::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
         case AGAIN:
             setPixmap(QPixmap(":/images/images/again_icon_pressed.png"));
             break;
+        case CONT:
+            setPixmap(QPixmap(":/images/images/cont_icon_pressed.png"));
     }
 }
 
@@ -63,6 +66,8 @@ void Icon::setImage(Icon::Type type)
         case AGAIN:
             setPixmap(QPixmap(":/images/images/again_icon.png"));
             break;
+        case CONT:
+            setPixmap(QPixmap(":/images/images/cont_icon.png"));
     }
 }
 
@@ -79,6 +84,12 @@ void Icon::playClickSound()
 void Icon::setSoundFlag(bool flag)
 {
     this->inSoundFlag = flag;
+}
+
+void Icon::setType(Icon::Type type)
+{
+    this->type = type;
+    setImage(type);
 }
 
 

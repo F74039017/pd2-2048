@@ -4,6 +4,7 @@
 #include "Game.h"
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
+#include "Mainwindow.h"
 
 IndexScene::IndexScene(QObject *parent)
     :QGraphicsScene(parent)
@@ -97,17 +98,20 @@ void IndexScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(startIconRect->contains(event->scenePos().toPoint()) && !rankon)
     {
-        startIcon->playClickSound();
+        if(!Mainwindow::soundMute)
+          startIcon->playClickSound();
         emit pressStart();
     }
     else if(rankIconRect->contains(event->scenePos().toPoint()) && !rankon)
     {
-        rankIcon->playClickSound();
+        if(!Mainwindow::soundMute)
+            rankIcon->playClickSound();
         showRank();
     }
     else if(backIconRect->contains(event->scenePos().toPoint()) && rankon)
     {
-        backIcon->playClickSound();
+        if(!Mainwindow::soundMute)
+            backIcon->playClickSound();
         hideRank();
     }
 }
