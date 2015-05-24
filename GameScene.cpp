@@ -1,7 +1,6 @@
 #include "GameScene.h"
 #include <QDebug>
 #include <cstdlib>
-#define dbName "rank.db"
 #define tbName "rank"
 #include "Game.h"
 #include "Mainwindow.h"
@@ -177,7 +176,10 @@ void GameScene::init()
     score->setText("0");
 
     /* init num */
-    addnum = 2; // start with 2 squares
+    if(mode == XTILE)
+        addnum = 3;
+    else
+        addnum = 2; // start with 2 squares
 
     /* isAnimation */
     isAnimation = false;
@@ -212,15 +214,16 @@ void GameScene::init()
     againIcon->setSoundFlag(false);
 
     /* reset time */
-    if(mode == GameScene::CLASSIC)
-    {
-        timeLabel->hide();
-    }
-    else if(mode == GameScene::SURVIVAL)
+    if(mode == GameScene::SURVIVAL)
     {
         timeLabel->show();
         timeLabel->setText("15");
         timer->start(1000);
+    }
+    else
+    {
+        timeLabel->hide();
+        timer->stop();
     }
 
     /* get userName */
@@ -266,6 +269,9 @@ void GameScene::addsquares()
 //        qDebug() << "add new squares" << endl;
     }
     while(cnt!=addnum);
+
+    if(mode==XTILE && addnum==3)    // add Xtile
+        squares[row][col]->setValue(-1);
 }
 
 void GameScene::keyPressEvent(QKeyEvent *event)
@@ -393,6 +399,7 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
         return;
 
     addValue = 0;   // addValue init to 0
+    addTime = 0;
     hasMoved = false;
 
     if(dir==1)  // up
@@ -406,8 +413,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[j][i]->isExist())
                     continue;
                 int cur = squares[j][i]->getValue();
-                if(cur==last && cur!=Icon::maxValue)
+                if(cur==last && cur!=Square::maxValue)
+                {
                     squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
+                    addTime += (cur>=16)? 2: 0;
+                }
                 else
                     squares[++id][i]->setValue(cur), last=cur;
                 if(!(id==j))
@@ -430,8 +440,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[j][i]->isExist())
                     continue;
                 int cur = squares[j][i]->getValue();
-                if(cur==last && cur!=Icon::maxValue)
+                if(cur==last && cur!=Square::maxValue)
+                {
                     squares[id][i]->setValue(cur*2), last=0, addValue += cur*2;
+                    addTime += (cur>=16)? 2: 0;
+                }
                 else
                     squares[--id][i]->setValue(cur), last=cur;
                 if(!(id==j))
@@ -454,8 +467,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[i][j]->isExist())
                     continue;
                 int cur = squares[i][j]->getValue();
-                if(cur==last && cur!=Icon::maxValue)
+                if(cur==last && cur!=Square::maxValue)
+                {
                     squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
+                    addTime += (cur>=16)? 2: 0;
+                }
                 else
                     squares[i][++id]->setValue(cur), last=cur;
                 if(!(id==j))
@@ -478,8 +494,11 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
                 if(!squares[i][j]->isExist())
                     continue;
                 int cur = squares[i][j]->getValue();
-                if(cur==last && cur!=Icon::maxValue)
+                if(cur==last && cur!=Square::maxValue)
+                {
                     squares[i][id]->setValue(cur*2), last=0, addValue += cur*2;
+                    addTime += (cur>=16)? 2: 0;
+                }
                 else
                     squares[i][--id]->setValue(cur), last=cur;
                 if(!(id==j))
@@ -499,13 +518,15 @@ void GameScene::combine(int dir) // 1->up 2->down 3->left 4->right
 void GameScene::addScore()
 {
     /* survival mode increase 2 second when merged point>=16 */
-    if(mode==GameScene::SURVIVAL && addValue>=32)
-        timeLabel->setText(QString::number(timeLabel->text().toInt()+2));
+    if(mode==GameScene::SURVIVAL)
+        timeLabel->setText(QString::number(timeLabel->text().toInt()+addTime));
 
     /* survival mode increase 2*value for rank */
 //    qDebug() << addValue;
     if(mode==GameScene::SURVIVAL)
         addValue <<= 1;
+    else if(mode==GameScene::XTILE)
+        addValue *= 1.5;
 //    qDebug() << addValue;
     int newScore = score->text().toInt()+addValue;
     score->setText(QString::number(newScore));

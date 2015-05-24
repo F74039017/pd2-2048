@@ -11,8 +11,8 @@ class Square: public QObject, public QGraphicsPixmapItem
     Q_PROPERTY (QPointF pos READ pos WRITE setPos)
 
 public:
+    static const int maxValue = 2048;
     Square(QGraphicsItem * parent = 0);
-
     void setValue(int value);
     int getValue();
     void setExist(bool flag);

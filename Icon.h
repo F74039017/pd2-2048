@@ -6,7 +6,6 @@
 class Icon : public QGraphicsPixmapItem
 {
 public:
-    static const int maxValue = 2048;
     enum Type{START, RANK, BACK, AGAIN, CONT};
     Icon(Icon::Type type, QGraphicsItem * parent=0);
     void hoverEnterEvent(QGraphicsSceneHoverEvent * event);

@@ -29,6 +29,7 @@ private:
     QAction *giveupAct;
     QAction *survivalAct;
     QAction *classicAct;
+    QAction *xtileAct;
     QAction *soundMuteAct;
     QAction *musicMuteAct;
     Game *game;

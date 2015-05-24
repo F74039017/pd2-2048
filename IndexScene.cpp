@@ -1,5 +1,4 @@
 #include "IndexScene.h"
-#define dbName "rank.db"
 #define tbName "rank"
 #include "Game.h"
 #include <QDebug>

@@ -1,5 +1,5 @@
 #include "Game.h"
-#define dbName "rank.db"
+#define dbName "user.db"
 #define tbName "rank"
 #include "Mainwindow.h"
 
@@ -85,6 +85,12 @@ void Game::setClassMode()
 void Game::setSurvivalMode()
 {
     gameScene->setMode(GameScene::SURVIVAL);
+    gameScene->init();
+}
+
+void Game::setXtileMode()
+{
+    gameScene->setMode((GameScene::XTILE));
     gameScene->init();
 }
 

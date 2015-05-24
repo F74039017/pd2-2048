@@ -114,5 +114,7 @@ void Square::updatePixmap()
         case 2048:
             setPixmap(QPixmap(":/images/images/square2048.png"));
             break;
+        case -1:
+            setPixmap(QPixmap(":/images/images/squareX.png"));
     }
 }

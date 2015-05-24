@@ -1,8 +1,8 @@
 #include "Mainwindow.h"
 #include <QInputDialog>
 
-bool Mainwindow::soundMute = true;  //-- true for test
-bool Mainwindow::musicMute = true;
+bool Mainwindow::soundMute = false;  //-- true for test
+bool Mainwindow::musicMute = false;
 
 Mainwindow::Mainwindow()
 {
@@ -18,6 +18,8 @@ Mainwindow::Mainwindow()
     QObject::connect(classicAct, SIGNAL(triggered()), game, SLOT(setClassMode()));
     survivalAct = new QAction("&Survival", this);
     QObject::connect(survivalAct, SIGNAL(triggered()), game, SLOT(setSurvivalMode()));
+    xtileAct = new QAction("&Xtile", this);
+    QObject::connect(xtileAct, SIGNAL(triggered()), game, SLOT(setXtileMode()));
         /* Option */
     restartAct = new QAction("&Restart", this);
     QObject::connect(restartAct, SIGNAL(triggered()), game, SLOT(restart()));
@@ -35,6 +37,7 @@ Mainwindow::Mainwindow()
         /* Mode */
     modeMenu = menuBar()->addMenu("&Mode");
     modeMenu->addAction(classicAct);
+    modeMenu->addAction(xtileAct);
     modeMenu->addAction(survivalAct);
         /* Option */
     optionMenu = menuBar()->addMenu("&Option");

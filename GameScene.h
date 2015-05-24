@@ -68,8 +68,7 @@ private:
     GameScene::Mode mode;
     QString userName;
     bool isCont;
-
-//    int record[16];
+    int addTime;
 
     int checkend();
     void gameover();
