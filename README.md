@@ -69,6 +69,8 @@ Architecture
 
 	Contain QPropertyAnimation class to implement move animation. (Controled by gameScene)
 	
+Click [here](https://terry-alu.hackpad.com/Qt-2048-dbH365v7CAG) for framework images.
+
 Reference	
 ------------------------
 [**Index background picture**]
@@ -77,6 +79,8 @@ Reference
 (https://www.youtube.com/watch?v=qaNTZyne5RY)<br />
 [**Framework**]
 (https://www.youtube.com/watch?v=8ntEQpg7gck&list=PLMgDVIa0Pg8WrI9WmZR09xAbfXyfkqKWy)<br />
+[**Music**]
+(http://maoudamashii.jokersounds.com/)<br />
 
 Too many to list all here.<br />
 My Icon and squares were designed by following youtube tutorial.<br />
