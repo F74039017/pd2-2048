@@ -45,7 +45,7 @@ void Icon::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
     }
 }
 
-void Icon::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void Icon::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) // reset unpressed icon
 {
     setImage(type);
 }

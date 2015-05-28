@@ -381,12 +381,12 @@ void GameScene::gameover()   // show rank dialog in the future
 //    qDebug() << "gameover" << endl;
 }
 
-void GameScene::updateExist()
+void GameScene::updateExist()   // call after move => hide and show squares
 {
     for(int i=0; i<4; i++)
         for(int j=0; j<4; j++)
         {
-            if(squares[i][j]->getValue())
+            if(squares[i][j]->getValue())   // value != 0
                 squares[i][j]->setExist(true);
             else
                 squares[i][j]->setExist(false);

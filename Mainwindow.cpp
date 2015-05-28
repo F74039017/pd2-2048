@@ -26,7 +26,6 @@ Mainwindow::Mainwindow()
     giveupAct = new QAction("&GiveUp", this);
     QObject::connect(giveupAct, SIGNAL(triggered()), game, SLOT(toIndexScene()));
         /* Mute */
-//    soundMuteAct = new QAction("&Sound");
     musicMuteAct = new QAction("&Music", this);
     QObject::connect(musicMuteAct, SIGNAL(triggered()), game, SLOT(muteMusic()));
     soundMuteAct = new QAction("&Sound", this);
@@ -59,7 +58,7 @@ void Mainwindow::startGame()
     game->init();   // start game
 }
 
-void Mainwindow::askUserName()
+void Mainwindow::askUserName()  // input dialog
 {
     bool ok;
     QString text = QInputDialog::getText(this, "Your name?", "User name:", QLineEdit::Normal, "Anonymous", &ok);

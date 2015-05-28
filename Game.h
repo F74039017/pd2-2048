@@ -13,7 +13,7 @@ class Game: public QGraphicsView{
 
 public:
     Game(QWidget * parent = 0);
-    void init();
+    void init();    // restart
     void setUserName(QString name);
     QString getuserName();
 

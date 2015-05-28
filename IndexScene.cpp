@@ -91,6 +91,17 @@ IndexScene::IndexScene(QObject *parent)
         rankScore[i]->hide();
     }
 
+    /* init bestScore */
+    bestScore = new QGraphicsSimpleTextItem("Your Best: ");
+    bestScore->setPos(55, 560);
+    bestScore->setBrush(QBrush(QColor(Qt::white)));
+    bestScore->setZValue(2);
+    QFont bestScoreFont("URW Chancery L", 20);
+    bestScoreFont.setItalic(true);
+    bestScore->setFont(bestScoreFont);
+    addItem(bestScore);
+    bestScore->hide();
+
 }
 
 void IndexScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -126,6 +137,7 @@ void IndexScene::showRank() // start pos bug
     rankon = true;
     rankBG->show();
     backIcon->show();
+    bestScore->show();
     for(int i=0; i<10; i++)
         rankName[i]->show(), rankID[i]->show(), rankScore[i]->show();
     updateRank();
@@ -139,6 +151,7 @@ void IndexScene::hideRank()
     rankon = false;
     rankBG->hide();
     backIcon->hide();
+    bestScore->hide();
     resetIcon();
     for(int i=0; i<10; i++)
         rankName[i]->hide(), rankID[i]->hide(), rankScore[i]->hide();
@@ -151,6 +164,7 @@ void IndexScene::updateRank()
 {
     QSqlQuery qry;
     QString name;
+    /* set rank */
     if(qry.exec(QString("SELECT name, score FROM %1 ORDER BY score DESC").arg(tbName)))
     {
         int i=0;
@@ -169,4 +183,17 @@ void IndexScene::updateRank()
         qDebug() << qry.lastError().text();
         return;
     }
+
+    /* get userName */
+    userName = dynamic_cast<Game*>(parent())->getuserName();
+
+    /* set best score */
+    if(qry.exec(QString("SELECT score FROM %1 WHERE name GLOB '%2' ORDER BY score DESC").arg(tbName, userName)))
+        {
+            qry.next();
+            if(qry.value(0).toString().isEmpty())   // new player check
+                bestScore->setText("Your Best:  0");
+            else
+                bestScore->setText(QString("Your Best:  %1").arg(qry.value(0).toString()));
+        }
 }

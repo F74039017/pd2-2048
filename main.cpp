@@ -9,6 +9,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    /* Set window default position */
     QDesktopWidget *desktop = QApplication::desktop();
     int x = (desktop->width()-W)/2;
     int y = (desktop->height()-H)/4;

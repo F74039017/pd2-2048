@@ -31,6 +31,8 @@ private:
     QGraphicsSimpleTextItem *rankName[10];
     QGraphicsSimpleTextItem *rankScore[10];
     QGraphicsSimpleTextItem *rankID[10];
+    QGraphicsSimpleTextItem *bestScore;
+    QString userName;
 
     void showRank();
     void hideRank();

@@ -27,6 +27,7 @@ Game::Game(QWidget * parent)
     if(!Mainwindow::musicMute)
         bgm->play();
 
+    /* Create database and user table */
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbName);
     if(!db.open())
