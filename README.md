@@ -2,8 +2,11 @@
 ===========================
 The program is Qt Gui Application<br />
 There are three modes you can choose in menu.<br />
-Rank won't evaporate after the program terminated. 
+Rank won't evaporate after the program terminated. <br />
+(You can change it during game too, but the current score will be discarded.)<br />
 If you need to clear it, please delete the user.db file in same directory<br />
+
+More detail for this project, please click [here](https://terry-alu.hackpad.com/Qt-2048-dbH365v7CAG)
 
 Environment 
 --------------------------
@@ -69,7 +72,6 @@ Architecture
 
 	Contain QPropertyAnimation class to implement move animation. (Controled by gameScene)
 	
-Click [here](https://terry-alu.hackpad.com/Qt-2048-dbH365v7CAG) for framework images.
 
 Reference	
 ------------------------
